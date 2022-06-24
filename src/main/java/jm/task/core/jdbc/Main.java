@@ -1,29 +1,28 @@
 package jm.task.core.jdbc;
 
+import jm.task.core.jdbc.dao.UserDao;
+import jm.task.core.jdbc.dao.UserDaoHibernateImpl;
 import jm.task.core.jdbc.service.UserService;
 import jm.task.core.jdbc.service.UserServiceImpl;
+import jm.task.core.jdbc.util.HyberUtil;
 
+import java.io.IOException;
+import java.sql.SQLException;
 
 
 public class Main {
+    public static void main(String[] args) throws SQLException, IOException {
 
-    private final static UserService userService = new UserServiceImpl();
+        HyberUtil.getSessionFactory();
+        UserDao userDao = new UserDaoHibernateImpl();
 
+        userDao.createUsersTable();
+        for (int i = 0; i < 4; i++) {
+            userDao.saveUser("Name" + i, "LastName" + i, (byte) (i + 10));
+            System.out.println("Пользователь Name" + i + " добавлен в базу данных");
+        }
+        userDao.removeUserById(1);
+        userDao.getAllUsers().stream().forEach(System.out::println);
 
-    public static void main(String[] args) {
-        userService.createUsersTable();
-
-        userService.saveUser("Bender", "Rodriges", (byte) 110);
-        userService.saveUser("Homer", "Simpson", (byte) 44);
-        userService.saveUser("Eric", "Cartman", (byte) 11);
-        userService.saveUser("Kenny", "Mccormac", (byte) 9);
-
-        userService.removeUserById(2);
-
-        userService.getAllUsers();
-
-        userService.cleanUsersTable();
-
-        userService.dropUsersTable();
     }
 }
